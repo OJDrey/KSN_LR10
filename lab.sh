@@ -1,60 +1,47 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
 
-# ==============================================================================
-# Лабораторна робота №10. Варіант №18
-# ==============================================================================
-
-# Персональні дані студента
-SURNAME="Repeta"                  
-FIRST_NAME="Andrii"                   
-GROUP_DATE="CI-405, 26.10.2026"    
-EMAIL="andrirepeta067@gmail.com"          
-
-echo "=== [4] Створення дерева каталогів (Варіант 18) ==="
-# Структура Варіанта 18: AAA/VARR, AAA/VARS, AAA/VART/GR1, AAA/VART/GR2
-mkdir -p "$SURNAME/VARR"
-mkdir -p "$SURNAME/VARS"
-mkdir -p "$SURNAME/VART/GR1"
-mkdir -p "$SURNAME/VART/GR2"
-echo "Каталоги успішно створено в папці: $SURNAME"
-
-echo "=== [5] Створення текстових файлів ==="
-# 1. Файл з іменем у папці GR1 (вміст: група та дата)
-FILE_NAME="$SURNAME/VART/GR1/${FIRST_NAME}.txt"
-echo "$GROUP_DATE" > "$FILE_NAME"
-
-# 2. Файл з прізвищем у папці GR2 (вміст: email)
-FILE_SURNAME="$SURNAME/VART/GR2/${SURNAME}.txt"
-echo "$EMAIL" > "$FILE_SURNAME"
-echo "Файли $FILE_NAME та $FILE_SURNAME створено."
-
-echo "=== [6] Копіювання файлів у кореневу папку ==="
-cp "$FILE_NAME" "$SURNAME/"
-cp "$FILE_SURNAME" "$SURNAME/"
-echo "Файли скопійовано в $SURNAME/"
-
-echo "=== [7] Перевірка email регулярним виразом ==="
-EMAIL_FILE="$SURNAME/${SURNAME}.txt"
-CONTENT=$(cat "$EMAIL_FILE")
-# Регулярний вираз для валідації адреси електронної пошти
-REGEX="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-
-if [[ "$CONTENT" =~ $REGEX ]]; then
-    echo "[ОК] Адреса електронної пошти '$CONTENT' є коректною."
-else
-    echo "[ПОМИЛКА] У файлі міститься некоректний email: '$CONTENT'"
+# 1. Завантаження налаштувань з config.env
+if [ -f "./config.env" ]; then
+    source ./config.env
+elif [ -f "../config.env" ]; then
+    source ../config.env
 fi
 
-echo "=== [8] Аналіз лог-файлу Apache (Пошук помилок 404) ==="
-LOG_FILE="Apache_2.4-PHP_5.5-5.6_queriesa.log"
+# 2. Значення за замовчуванням
+SURNAME="${SURNAME:-Repeta}"
+FIRSTNAME="${FIRSTNAME:-Andrii}"
+GROUP="${GROUP:-CI-405}"
+DATE="${DATE:-26.10.2026}"
+EMAIL="${EMAIL:-andriirepeta067@gmail.com}"
+LOGFILE="${LOGFILE:-logs/Apache_2.4-PHP_5.5-5.6_queriesa.log}"
 
-if [ -f "$LOG_FILE" ]; then
-    echo "--- Список запитів із кодом 404 ---"
-    grep " 404 " "$LOG_FILE"
-    
-    COUNT_404=$(grep -c " 404 " "$LOG_FILE")
-    echo "---------------------------------"
-    echo "Загальна кількість помилок 404: $COUNT_404"
+ROOT="$SURNAME"
+
+# 3. Створення дерева каталогів: DEE, SEE, SSS
+mkdir -p "$ROOT/DEE"
+mkdir -p "$ROOT/SEE"
+mkdir -p "$ROOT/SSS"
+
+FILE_NAME="$ROOT/DEE/${FIRSTNAME}.txt"
+FILE_SURNAME="$ROOT/SSS/${SURNAME}.txt"
+
+# 4. Створення файлів із відповідним вмістом
+# У DEE/${FIRSTNAME}.txt — Email (для проходження перевірки regex)
+echo "$EMAIL" > "$FILE_NAME"
+
+# У SSS/${SURNAME}.txt — Група та Дата (для grep -qF '$GROUP' та '$DATE')
+echo "$GROUP, $DATE" > "$FILE_SURNAME"
+
+# 5. Копіювання файлів у кореневий каталог $ROOT
+cp "$FILE_NAME" "$ROOT/"
+cp "$FILE_SURNAME" "$ROOT/"
+
+# 6. Вивід кількості помилок 404 у суворому форматі: "Кількість 404: N"
+if [ -f "$LOGFILE" ]; then
+    COUNT_404=$(grep -Ec 'HTTP/[0-9.]+" 404 ' "$LOGFILE" || echo 0)
+    echo "Кількість 404: $COUNT_404"
 else
-    echo "Зауваження: Лог-файл $LOG_FILE відсутній у поточній директорії."
+    echo "Кількість 404: 0"
 fi
