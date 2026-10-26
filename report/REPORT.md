@@ -233,7 +233,8 @@ Active Connections
 <img width="296" height="218" alt="image" src="https://github.com/user-attachments/assets/c2d1e5ac-70bb-4efa-a810-c0595699ba95" />
 <img width="486" height="29" alt="image" src="https://github.com/user-attachments/assets/eaef251b-8551-4339-bb4c-48ba124de0b2" />
 ## 12. GitHub
-(скріншот зеленої галочки Actions)
+<img width="1905" height="720" alt="image" src="https://github.com/user-attachments/assets/2428e450-143d-4686-b1bc-5e3deb49a7b8" />
+
 
 ## 13. Помилки 404
 (кількість та вивід)
